@@ -87,6 +87,7 @@ void menuSelection() {
 void testFasttextAPI() {
     // TODO: Add functionality
     
+
 }
 
 void convertShortTextVectorTest() {
