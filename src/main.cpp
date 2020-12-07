@@ -19,7 +19,7 @@ void convertShortTextVectorTest();
 void convertShortTextStringTest();
 void testFasttextAPI();
 
-int main()
+int main(void)
 {  
     menuSelection();
 
@@ -80,7 +80,7 @@ void menuSelection() {
         testFasttextAPI();
         break;
     default:
-        std::cout << "Invalid option selected..!!";
+        std::cout << "Invalid option selected..!!\n\n";
     }
 }
 
