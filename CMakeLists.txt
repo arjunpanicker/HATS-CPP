@@ -27,30 +27,33 @@ set(HEADER_FILES
 )
 
 set(SOURCE_FILES
-    src/args.cpp
-    src/autotune.cpp
-    src/datasethandler.cpp
-    src/densematrix.cpp
-    src/dictionary.cpp
-    src/Fasttext.cpp
-    src/loss.cpp
-    src/matrix.cpp
-    src/meter.cpp
-    src/model.cpp
-    src/preprocessing.cpp
-    src/productquantizer.cpp
-    src/quantmatrix.cpp
-    src/utils.cpp
-    src/vector.cpp
+    src/ft/src/args.cpp
+    src/ft/src/autotune.cpp
+    src/preprocessing/src/datasethandler.cpp
+    src/ft/src/densematrix.cpp
+    src/ft/src/dictionary.cpp
+    src/ft/src/Fasttext.cpp
+    src/ft/src/loss.cpp
+    src/ft/src/matrix.cpp
+    src/ft/src/meter.cpp
+    src/ft/src/model.cpp
+    src/preprocessing/src/preprocessing.cpp
+    src/ft/src/productquantizer.cpp
+    src/ft/src/quantmatrix.cpp
+    src/ft/src/utils.cpp
+    src/ft/src/vector.cpp
 )
 
 find_package (Threads)
 
 if(GEN_SHARED_LIB)
     add_library(Hats_ML SHARED ${SOURCE_FILES})
+    target_include_directories(Hats_ML PUBLIC 
+        "${PROJECT_SOURCE_DIR}/src/ft/include"
+        "${PROJECT_SOURCE_DIR}/src/preprocessing/include"
+    )
     message("Creating shared library")
 else()
-    # add_library(Hats_ML STATIC ${SOURCE_FILES})
     add_subdirectory(src/ft)
     add_subdirectory(src/preprocessing)
 
@@ -63,9 +66,6 @@ else()
 endif()
 
 target_link_libraries (Hats_ML PUBLIC ${CMAKE_THREAD_LIBS_INIT})
-
-
-target_include_directories(Hats_ML PUBLIC "${PROJECT_SOURCE_DIR}/include")
 
 set_target_properties(Hats_ML PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(Hats_ML PROPERTIES LINKER_LANGUAGE CXX)
