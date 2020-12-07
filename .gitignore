@@ -1,3 +1,6 @@
+# Ignore vsc files
+.vs/
+
 # Ignore build and lib directories
 build/
 lib/
