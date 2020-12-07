@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/bash
 
 # Author: Arjun Panicker
 # Script follows here:
@@ -7,8 +7,13 @@
 cd build
 
 # remove all the files if '-c' parameter is passed
-if [ $0 == "-c" -o $0 == "--clean"] then
+if [ "$1" = "-c" -o "$1" = "--clean" ]
+then
     rm -r *
+else
+    # Show some information regarding different build process
+    echo "Use '-c' or '--clean' to make a clean build"
+    echo ""
 fi
 
 # generte make files
