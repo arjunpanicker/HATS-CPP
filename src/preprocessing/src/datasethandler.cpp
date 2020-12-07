@@ -22,7 +22,10 @@ namespace hats {
 		// Filename
 		std::ifstream myFile{ filename };
 
-		if (!myFile.is_open()) return {};
+		if (!myFile.is_open()) {
+			std::cout << hats::errors::FILE_OPEN_ERROR;
+			return {};
+		}
 
 		// Helper variables
 		std::string line, colName, val;

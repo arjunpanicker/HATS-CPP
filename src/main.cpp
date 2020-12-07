@@ -40,9 +40,9 @@ void menuSelection() {
     std::cout << "8. Preprocessing - Stopword Removal (string)\n";
     std::cout << "9. Preprocessing - Short-text Conversion (Vector)\n";
     std::cout << "10. Preprocessing - Short-text Conversion (string)\n";
-    std::cout << "\n\n****** Word Embedding Tests ******\n";
+    std::cout << "\n****** Word Embedding Tests ******\n";
     std::cout << "11. Test Fasttext and Args\n";
-    std::cout << "Selection: ";
+    std::cout << "\nSelection: ";
     std::cin >> menuSelection;
 
     switch (menuSelection) {
@@ -206,6 +206,7 @@ void readDefaultDatasetTest(hats::DataTable* data) {
     hats::CSVHandler csvHandler(filename);
 
     hats::DataTable csvTable = csvHandler.read_csv();
+    std::cout << csvHandler.shape().first;
 
     for (int col = 0; col != csvHandler.shape().second; col++) {
         std::string colName = ((hats::DataColumn)csvTable[col]).first;
