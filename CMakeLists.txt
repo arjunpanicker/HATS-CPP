@@ -30,7 +30,6 @@ set(HEADER_FILES
 set(SOURCE_FILES
     src/args.cpp
     src/autotune.cpp
-    src/config.cpp
     src/datasethandler.cpp
     src/densematrix.cpp
     src/dictionary.cpp
