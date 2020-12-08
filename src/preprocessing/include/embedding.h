@@ -3,11 +3,19 @@
 #define EMBEDDING_H
 
 namespace hats {
-    typedef std::vector<std::string> StringList;
-	typedef std::pair<std::string, std::vector<std::string>> DataColumn;
-	typedef std::vector<DataColumn> DataTable;
 
+    class Embedding {
+        public:
+            Embedding() {}
+            
+            ~Embedding() {}
+
+            void train(DataTable data);
     
+            FloatList getWordEmbedding(std::string word);
+
+            FloatList getSentenceEmbedding(std::string sentence);
+    };
 }
 
 #endif // !EMBEDDING_H

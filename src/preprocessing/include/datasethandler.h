@@ -4,9 +4,6 @@
 
 
 namespace hats {
-	typedef std::pair<std::string, std::vector<std::string>> DataColumn;
-	typedef std::vector<DataColumn> DataTable;
-	typedef std::vector<std::string> StringList;
 
 	class TextHandler {
 	private:

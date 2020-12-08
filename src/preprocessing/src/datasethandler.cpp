@@ -7,14 +7,10 @@
 #include <utility>
 #include <stdexcept>
 #include <sstream>
+
 #include "datasethandler.h"
 #include "config.h"
-
-// Defining how a column looks like - Header: String, values: List<String>
-typedef std::pair<std::string, std::vector<std::string>> DataColumn;
-typedef std::vector<DataColumn> DataTable;
-
-typedef std::vector<std::string> StringList;
+#include "utils.h"
 
 namespace hats {
 	std::vector<DataColumn> CSVHandler::read_csv()

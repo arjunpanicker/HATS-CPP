@@ -4,14 +4,11 @@
 #include <utility>
 #include <algorithm>
 #include <regex>
+
 #include "preprocessing.h"
 #include "config.h"
 #include "datasethandler.h"
-
-typedef std::pair<std::string, std::vector<std::string>> DataColumn;
-typedef std::vector<DataColumn> DataTable;
-
-typedef std::vector<std::string> StringList;
+#include "utils.h"
 
 namespace hats {
 	std::size_t Preprocessing::findSubstringPosition(std::string value, std::string substr)
