@@ -8,9 +8,9 @@
 #include <stdexcept>
 #include <sstream>
 
+#include "pre_utils.h"
 #include "datasethandler.h"
 #include "config.h"
-#include "utils.h"
 
 namespace hats {
 	std::vector<DataColumn> CSVHandler::read_csv()

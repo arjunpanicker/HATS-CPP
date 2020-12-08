@@ -5,10 +5,10 @@
 #include <algorithm>
 #include <regex>
 
+#include "pre_utils.h"
 #include "preprocessing.h"
 #include "config.h"
 #include "datasethandler.h"
-#include "utils.h"
 
 namespace hats {
 	std::size_t Preprocessing::findSubstringPosition(std::string value, std::string substr)

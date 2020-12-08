@@ -1,6 +1,6 @@
 #pragma once
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef PRE_UTILS_H
+#define PRE_UTILS_H
 
 #include <iostream>
 #include <vector>
@@ -14,4 +14,4 @@ namespace hats {
     typedef std::vector<float> FloatList;
 }
 
-#endif // !UTILS_H
+#endif // !PRE_UTILS_H
