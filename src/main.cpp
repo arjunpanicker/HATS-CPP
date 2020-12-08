@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 
+#include "pre_utils.h"
 #include "Fasttext.h"
 #include "datasethandler.h"
 #include "config.h"
