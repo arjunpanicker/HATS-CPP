@@ -33,7 +33,7 @@ namespace hats {
 			std::stringstream ss(line);
 
 			while (std::getline(ss, colName, ',')) {
-				_result.push_back({ colName, std::vector<std::string> {} });
+				_result.push_back({ colName, StringList {} });
 				_colCount++;
 			}
 		}
