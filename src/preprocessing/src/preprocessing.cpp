@@ -200,7 +200,7 @@ namespace hats {
 		return preprocessedData;
 	}
 
-	std::string Preprocessing::pipeline(std::string sentence, StringList stopWords = {}, DataTable shortTextData = {})
+	std::string Preprocessing::pipeline(std::string sentence, StringList stopWords, DataTable shortTextData)
 	{
 		std::string preprocessedSentence;
 
