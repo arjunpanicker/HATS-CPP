@@ -96,14 +96,21 @@ void testEmbeddings() {
     data = prerpocessing.pipeline(data);
 
     // Generate a file with first column of the preprocessed data
-    hats::DataTable commandsData = { data[0] };
+    hats::DataColumn col = std::make_pair("", data[0].second);
+    hats::DataTable commandsData = { col };
     hats::CSVHandler csvHandler;
-    std::string filename = "preprocessed_data.csv";
-    csvHandler.write_csv(commandsData, filename);
+    std::string filename = "preprocessed_data";
+    filename = csvHandler.write_csv(commandsData, filename);
 
     // Train the fasttext model
     hats::Embedding embedding(filename);
     embedding.train();
+    
+    fasttext::Vector vec = embedding.getWordEmbedding("Hello");
+    std::cout << "Hello: \n";
+    for (int i = 0; i < vec.size(); i++) {
+        std::cout << vec.data()[i] << "  ";
+    }
 }
 
 void convertShortTextVectorTest() {

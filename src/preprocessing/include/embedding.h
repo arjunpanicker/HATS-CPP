@@ -21,7 +21,7 @@ namespace hats {
 
             void train();
     
-            // fasttext::FastText getWordEmbedding(std::string word);
+            fasttext::Vector getWordEmbedding(std::string word);
 
             // FloatList getSentenceEmbedding(std::string sentence);
     };
