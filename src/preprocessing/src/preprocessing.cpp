@@ -199,4 +199,23 @@ namespace hats {
 
 		return preprocessedData;
 	}
+
+	std::string Preprocessing::pipeline(std::string sentence, StringList stopWords = {}, DataTable shortTextData = {})
+	{
+		std::string preprocessedSentence;
+
+		// Convert sentence to lowercase
+		preprocessedSentence = toLowercase(sentence);
+
+		// Remove punctuations
+		preprocessedSentence = removePunctuation(preprocessedSentence);
+
+		// Remove stopwords
+		preprocessedSentence = removeStopWords(preprocessedSentence, stopWords);
+
+		// Convert short-texts
+		preprocessedSentence = convertShortText(preprocessedSentence, shortTextData);
+
+		return preprocessedSentence;
+	}
 }

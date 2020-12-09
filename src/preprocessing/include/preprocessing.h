@@ -39,7 +39,11 @@ namespace hats {
 		/// to the ST-MRD provided.
 		std::string convertShortText(std::string value, DataTable shorttextData = {});
 
+		// Preprocessing Pipeline
 		DataTable pipeline(DataTable data, StringList stopWords = {}, DataTable shortTextData = {});
+		
+		// Preprocessing Pipeline
+		std::string pipeline(std::string sentence, StringList stopWords = {}, DataTable shortTextData = {});
 	};
 }
 
