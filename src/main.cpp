@@ -20,7 +20,8 @@ void stopwordRemovalVectorTest();
 void stopwordRemovalStringTest();
 void convertShortTextVectorTest();
 void convertShortTextStringTest();
-void testEmbeddings();
+void testWordEmbeddings();
+void testSentenceEmbeddings();
 
 int main(void)
 {  
@@ -44,7 +45,8 @@ void menuSelection() {
     std::cout << "9. Preprocessing - Short-text Conversion (Vector)\n";
     std::cout << "10. Preprocessing - Short-text Conversion (string)\n";
     std::cout << "\n****** Word Embedding Tests ******\n";
-    std::cout << "11. Test Fasttext and Args\n";
+    std::cout << "11. Test Word Embeddings\n";
+    std::cout << "12. Test Sentence Embeddings\n";
     std::cout << "\nSelection: ";
     std::cin >> menuSelection;
 
@@ -80,15 +82,42 @@ void menuSelection() {
         convertShortTextStringTest();
         break;
     case 11:
-        testEmbeddings();
+        testWordEmbeddings();
+        break;
+    case 12:
+        testSentenceEmbeddings();
         break;
     default:
         std::cout << "Invalid option selected..!!\n\n";
     }
 }
 
-void testEmbeddings() {
-    // TODO: Add functionality
+void testSentenceEmbeddings() {
+    hats::DataTable data = getDataset();
+    
+    // Preprocess the data
+    hats::Preprocessing prerpocessing;
+    data = prerpocessing.pipeline(data);
+
+    // Generate a file with first column of the preprocessed data
+    hats::DataColumn col = std::make_pair("", data[0].second);
+    hats::DataTable commandsData = { col };
+    hats::CSVHandler csvHandler;
+    std::string filename = "preprocessed_data";
+    filename = csvHandler.write_csv(commandsData, filename);
+
+    // Train the fasttext model
+    hats::Embedding embedding(filename);
+    embedding.train();
+
+    // Check Sentence Embedding - "My name is Arjun!!"
+    std::string sentence = "My name is Arjun!!";
+    fasttext::Vector vec = embedding.getSentenceEmbedding(sentence);
+    std::cout << sentence << std::endl;
+    std::cout << vec << std::endl;
+}
+
+void testWordEmbeddings() {
     hats::DataTable data = getDataset();
     
     // Preprocess the data
@@ -106,11 +135,10 @@ void testEmbeddings() {
     hats::Embedding embedding(filename);
     embedding.train();
     
+    // Check Word embedding - "Hello"
     fasttext::Vector vec = embedding.getWordEmbedding("Hello");
     std::cout << "Hello: \n";
-    for (int i = 0; i < vec.size(); i++) {
-        std::cout << vec.data()[i] << "  ";
-    }
+    std::cout << vec << std::endl;
 }
 
 void convertShortTextVectorTest() {
