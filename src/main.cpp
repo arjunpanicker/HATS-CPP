@@ -2,13 +2,15 @@
 #include <string>
 
 #include "pre_utils.h"
-#include "Fasttext.h"
-#include "datasethandler.h"
 #include "config.h"
+#include "datasethandler.h"
 #include "preprocessing.h"
+#include "embedding.h"
 
+hats::DataTable getDataset();
 void menuSelection();
-void readDefaultDatasetTest(hats::DataTable* data = NULL);
+
+void readDefaultDatasetTest();
 void writeDefaultDatasetTest();
 void lowercaseStringTest();
 void lowercaseVectorTest();
@@ -18,7 +20,7 @@ void stopwordRemovalVectorTest();
 void stopwordRemovalStringTest();
 void convertShortTextVectorTest();
 void convertShortTextStringTest();
-void testFasttextAPI();
+void testEmbeddings();
 
 int main(void)
 {  
@@ -78,17 +80,30 @@ void menuSelection() {
         convertShortTextStringTest();
         break;
     case 11:
-        testFasttextAPI();
+        testEmbeddings();
         break;
     default:
         std::cout << "Invalid option selected..!!\n\n";
     }
 }
 
-void testFasttextAPI() {
+void testEmbeddings() {
     // TODO: Add functionality
+    hats::DataTable data = getDataset();
     
+    // Preprocess the data
+    hats::Preprocessing prerpocessing;
+    data = prerpocessing.pipeline(data);
 
+    // Generate a file with first column of the preprocessed data
+    hats::DataTable commandsData = { data[0] };
+    hats::CSVHandler csvHandler;
+    std::string filename = "preprocessed_data.csv";
+    csvHandler.write_csv(commandsData, filename);
+
+    // Train the fasttext model
+    hats::Embedding embedding(filename);
+    embedding.train();
 }
 
 void convertShortTextVectorTest() {
@@ -202,7 +217,7 @@ void writeDefaultDatasetTest() {
     csvHandler.write_csv(data, filename);
 }
 
-void readDefaultDatasetTest(hats::DataTable* data) {
+void readDefaultDatasetTest() {
     std::string filename = hats::files::SOURCE_DATASET_FILENAME;
     hats::CSVHandler csvHandler(filename);
 
@@ -218,8 +233,12 @@ void readDefaultDatasetTest(hats::DataTable* data) {
         }
         std::cout << "\n**********************************************************************\n";
     }
+}
 
-    if (data) {
-        data = &csvTable;
-    }
+hats::DataTable getDataset()
+{
+    std::string filename = hats::files::SOURCE_DATASET_FILENAME;
+    hats::CSVHandler csvHandler(filename);
+
+    return csvHandler.read_csv();
 }
