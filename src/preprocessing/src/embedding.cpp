@@ -14,11 +14,14 @@ namespace hats {
         ftFasttext->saveVectors("embeddings.vec");
     }
 
-    // fasttext::FastText Embedding::getWordEmbedding(std::string word)
-    // {
-    //     // ftFasttext.getWordVector();
-    //     return 0;
-    // }
+    fasttext::Vector Embedding::getWordEmbedding(std::string word)
+    {
+        fasttext::Vector vec(ftFasttext->getDimension());
+
+        ftFasttext->getWordVector(vec, word);
+
+        return vec;
+    }
 
     // FloatList Embedding::getSentenceEmbedding(std::string sentence)
     // {
