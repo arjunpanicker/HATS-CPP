@@ -13,14 +13,11 @@ namespace hats {
 
             Embedding(std::string filename) {
                 ftArgs = fasttext::Args();
-                ftFasttext = std::shared_ptr<fasttext::FastText>();
+                ftFasttext = std::make_shared<fasttext::FastText>();
                 ftArgs.input = filename;
             }
             
-            ~Embedding() {
-                // ftFasttext.reset();
-                // delete ftFasttext;
-            }
+            ~Embedding() { }
 
             // Train the fasttext model
             void train();
