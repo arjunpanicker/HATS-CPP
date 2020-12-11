@@ -4,14 +4,11 @@
 #include <utility>
 #include <algorithm>
 #include <regex>
+
+#include "pre_utils.h"
 #include "preprocessing.h"
 #include "config.h"
 #include "datasethandler.h"
-
-typedef std::pair<std::string, std::vector<std::string>> DataColumn;
-typedef std::vector<DataColumn> DataTable;
-
-typedef std::vector<std::string> StringList;
 
 namespace hats {
 	std::size_t Preprocessing::findSubstringPosition(std::string value, std::string substr)
@@ -80,18 +77,21 @@ namespace hats {
 		return value;
 	}
 
-	StringList Preprocessing::removeStopWords(StringList values)
+	StringList Preprocessing::removeStopWords(StringList values, StringList stopWords)
 	{
 		StringList newValues{};
-		std::string stopwordFilename = files::STOPWORDS_FILENAME;
-
-		TextHandler textHandler(stopwordFilename);
-		StringList stopwords = textHandler.read_txt();
+		StringList stopwordsList = stopWords;
+		
+		if (!stopWords.size()) {
+			std::string stopwordFilename = files::STOPWORDS_FILENAME;
+			TextHandler textHandler(stopwordFilename);
+			stopwordsList = textHandler.read_txt();
+		}
 
 
 		for (int i = 0; i < values.size(); i++) {
 			std::string value = values.at(i);
-			std::string stopwordRemovedValue = removeStopWords(value, stopwords);
+			std::string stopwordRemovedValue = removeStopWords(value, stopwordsList);
 
 			newValues.push_back(stopwordRemovedValue);
 		}
@@ -122,13 +122,16 @@ namespace hats {
 		return value;
 	}
 
-	StringList Preprocessing::convertShortText(StringList values)
+	StringList Preprocessing::convertShortText(StringList values, DataTable shorttextData)
 	{
 		StringList newList{};
+		DataTable shorttextInfo = shorttextData;
 
-		std::string filename = files::SMS_TRANSLATION_FILENAME;
-		CSVHandler csvHandler(filename);
-		DataTable shorttextData = csvHandler.read_csv();
+		if (!shorttextData.size()) {
+			std::string filename = files::SMS_TRANSLATION_FILENAME;
+			CSVHandler csvHandler(filename);
+			shorttextInfo = csvHandler.read_csv();
+		}
 
 		for (int i = 0; i < values.size(); i++) {
 			std::string convertedVal = convertShortText(values.at(i), shorttextData);
@@ -169,5 +172,50 @@ namespace hats {
 		}
 
 		return value;
+	}
+
+	DataTable Preprocessing::pipeline(DataTable data, StringList stopWords, DataTable shortTextData)
+	{
+		DataTable preprocessedData;
+		
+		for (auto col = data.begin(); col != data.end(); col++) {
+			std::string colName = (*col).first;
+			StringList colData = (*col).second;
+
+			// Convert each column to lowercase
+			colData = toLowercase(colData);
+
+			// Remove punctuations
+			colData = removePunctuation(colData);
+
+			// Remove stopwords
+			colData = removeStopWords(colData, stopWords);
+
+			// Convert short-texts
+			colData = convertShortText(colData, shortTextData);
+
+			preprocessedData.push_back({ colName, colData });
+		}
+
+		return preprocessedData;
+	}
+
+	std::string Preprocessing::pipeline(std::string sentence, StringList stopWords, DataTable shortTextData)
+	{
+		std::string preprocessedSentence;
+
+		// Convert sentence to lowercase
+		preprocessedSentence = toLowercase(sentence);
+
+		// Remove punctuations
+		preprocessedSentence = removePunctuation(preprocessedSentence);
+
+		// Remove stopwords
+		preprocessedSentence = removeStopWords(preprocessedSentence, stopWords);
+
+		// Convert short-texts
+		preprocessedSentence = convertShortText(preprocessedSentence, shortTextData);
+
+		return preprocessedSentence;
 	}
 }
