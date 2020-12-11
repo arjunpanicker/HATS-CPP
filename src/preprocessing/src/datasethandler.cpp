@@ -7,58 +7,67 @@
 #include <utility>
 #include <stdexcept>
 #include <sstream>
+
+#include "pre_utils.h"
 #include "datasethandler.h"
 #include "config.h"
 
-// Defining how a column looks like - Header: String, values: List<String>
-typedef std::pair<std::string, std::vector<std::string>> DataColumn;
-typedef std::vector<DataColumn> DataTable;
-
-typedef std::vector<std::string> StringList;
-
-namespace hats {
+namespace hats
+{
+	// TODO: Need to delegate this functionality to Java
 	std::vector<DataColumn> CSVHandler::read_csv()
 	{
 		// Filename
-		std::ifstream myFile{ filename };
+		std::ifstream myFile{filename};
 
-		if (!myFile.is_open()) return {};
+		if (!myFile.is_open())
+		{
+			std::cout << hats::errors::FILE_OPEN_ERROR;
+			return {};
+		}
 
 		// Helper variables
 		std::string line, colName, val;
 
 		// Read the column names
-		if (myFile.good()) {
+		if (myFile.good())
+		{
 			std::getline(myFile, line);
 
 			std::stringstream ss(line);
 
-			while (std::getline(ss, colName, ',')) {
-				_result.push_back({ colName, std::vector<std::string> {} });
+			while (std::getline(ss, colName, ','))
+			{
+				_result.push_back({colName, StringList{}});
 				_colCount++;
 			}
 		}
 
 		// Read data, line by line
-		while (std::getline(myFile, line)) {
+		while (std::getline(myFile, line))
+		{
 			std::stringstream ss(line);
-			int colIndex{ 0 };
+			int colIndex{0};
 
-			size_t pos{ 0 };
+			size_t pos{0};
 
-			while ((pos = line.find(",")) != std::string::npos) {
+			while ((pos = line.find(",")) != std::string::npos)
+			{
 				val = line.substr(0, pos);
 				line.erase(0, pos + 1);
 
-				if (val.length()) {
+				if (val.length())
+				{
 					_result.at(colIndex++).second.push_back(val);
 				}
-				else {
+				else
+				{
 					colIndex++;
 				}
 			}
 
-			if (line.length()) {
+			if (line.length())
+			{
 				_result.at(colIndex).second.push_back(line);
 			}
 
@@ -73,45 +82,59 @@ namespace hats {
 		return _result;
 	}
 
-	void CSVHandler::write_csv(DataTable data, std::string filename)
+	// TODO: Need to delegate this functionality to Java
+	std::string CSVHandler::write_csv(DataTable data, std::string filename)
 	{
 		// First, check if file already exists or not.
-		std::ifstream inFile{ filename };
-		std::string addr{ ".\\dataset\\" };
+		// std::string addr{".../doc/dataset/"};
+		// filename = addr + filename;
+		std::string ext = ".csv";
+		
+		std::ifstream inFile{filename + ext};
+		int count = 0;
 
 		// Check this loop.
-		while (inFile.good()) {
+		while (inFile.good())
+		{	
+			std::cout << filename << " exists";
 			inFile.close();
-
-			std::cout << filename << " already exists. Please enter another file name..\nNew Filename: ";
-			std::cin >> filename;
-
-			std::ifstream inFile{ addr + filename };
-			filename = addr + filename;
+			
+			filename += ++count;
+			std::cout << filename;
+			// filename = addr + filename;
+			inFile.open(filename + ext);
 		}
 		inFile.close();
 
 		// Create a new file with filename
-		std::ofstream myFile{ filename };
+		std::ofstream myFile{filename + ext};
 
 		// Insert the column names or headers
-		for (int i = 0; i < data.size(); i++) {
-			myFile << data.at(i).first;
+		// for (int i = 0; i < data.size(); i++)
+		// {
+		// 	if (!data.at(i).first.empty())
+		// 	{
+		// 		myFile << data.at(i).first;
 
-			// No comma at the end of the line
-			if (i != data.size() - 1) {
-				myFile << ",";
-			}
-		}
-		myFile << "\n";
+		// 		// No comma at the end of the line
+		// 		if (i != data.size() - 1)
+		// 		{
+		// 			myFile << ",";
+		// 		}
+		// 	}
+		// }
+		// myFile << "\n";
 
 		// Insert the column data
-		for (int i = 0; i < data.at(0).second.size(); i++) {
-			for (int j = 0; j < data.size(); j++) {
+		for (int i = 0; i < data.at(0).second.size(); i++)
+		{
+			for (int j = 0; j < data.size(); j++)
+			{
 				myFile << data.at(j).second.at(i);
 
 				// No comma at the end of the line
-				if (j != data.size() - 1) {
+				if (j != data.size() - 1)
+				{
 					myFile << ",";
 				}
 			}
@@ -119,23 +142,28 @@ namespace hats {
 		}
 
 		myFile.close();
+
+		return filename + ext;
 	}
 
 	StringList TextHandler::read_txt()
 	{
 		// Filename
-		std::ifstream myFile{ filename };
-		if (!myFile.is_open()) return {};
+		std::ifstream myFile{filename};
+		if (!myFile.is_open())
+			return {};
 
 		StringList content{};
 		std::string line;
 
-		if (myFile.good()) {
-			while (std::getline(myFile, line)) {
+		if (myFile.good())
+		{
+			while (std::getline(myFile, line))
+			{
 				content.push_back(line);
 			}
 		}
 
 		return content;
 	}
-}
+} // namespace hats

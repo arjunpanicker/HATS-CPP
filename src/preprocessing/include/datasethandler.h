@@ -4,9 +4,6 @@
 
 
 namespace hats {
-	typedef std::pair<std::string, std::vector<std::string>> DataColumn;
-	typedef std::vector<DataColumn> DataTable;
-	typedef std::vector<std::string> StringList;
 
 	class TextHandler {
 	private:
@@ -57,7 +54,7 @@ namespace hats {
 		/// This method writes the provided data into a csv file.
 		/// </summary>
 		/// <params name="data"> The data to be entered into the file </params>
-		void write_csv(DataTable data, std::string filename);
+		std::string write_csv(DataTable data, std::string filename);
 
 		/// <summary>
 		/// This method returns the shape of the csv file

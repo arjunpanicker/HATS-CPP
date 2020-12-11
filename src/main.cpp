@@ -1,13 +1,16 @@
 #include <iostream>
 #include <string>
 
-#include "Fasttext.h"
-#include "datasethandler.h"
+#include "pre_utils.h"
 #include "config.h"
+#include "datasethandler.h"
 #include "preprocessing.h"
+#include "embedding.h"
 
+hats::DataTable getDataset();
 void menuSelection();
-void readDefaultDatasetTest(hats::DataTable* data = NULL);
+
+void readDefaultDatasetTest();
 void writeDefaultDatasetTest();
 void lowercaseStringTest();
 void lowercaseVectorTest();
@@ -17,7 +20,8 @@ void stopwordRemovalVectorTest();
 void stopwordRemovalStringTest();
 void convertShortTextVectorTest();
 void convertShortTextStringTest();
-void testFasttextAPI();
+void testWordEmbeddings();
+void testSentenceEmbeddings();
 
 int main(void)
 {  
@@ -40,9 +44,10 @@ void menuSelection() {
     std::cout << "8. Preprocessing - Stopword Removal (string)\n";
     std::cout << "9. Preprocessing - Short-text Conversion (Vector)\n";
     std::cout << "10. Preprocessing - Short-text Conversion (string)\n";
-    std::cout << "\n\n****** Word Embedding Tests ******\n";
-    std::cout << "11. Test Fasttext and Args\n";
-    std::cout << "Selection: ";
+    std::cout << "\n****** Word Embedding Tests ******\n";
+    std::cout << "11. Test Word Embeddings\n";
+    std::cout << "12. Test Sentence Embeddings\n";
+    std::cout << "\nSelection: ";
     std::cin >> menuSelection;
 
     switch (menuSelection) {
@@ -77,17 +82,63 @@ void menuSelection() {
         convertShortTextStringTest();
         break;
     case 11:
-        testFasttextAPI();
+        testWordEmbeddings();
+        break;
+    case 12:
+        testSentenceEmbeddings();
         break;
     default:
         std::cout << "Invalid option selected..!!\n\n";
     }
 }
 
-void testFasttextAPI() {
-    // TODO: Add functionality
+void testSentenceEmbeddings() {
+    hats::DataTable data = getDataset();
     
+    // Preprocess the data
+    hats::Preprocessing prerpocessing;
+    data = prerpocessing.pipeline(data);
 
+    // Generate a file with first column of the preprocessed data
+    hats::DataColumn col = std::make_pair("", data[0].second);
+    hats::DataTable commandsData = { col };
+    hats::CSVHandler csvHandler;
+    std::string filename = "preprocessed_data";
+    filename = csvHandler.write_csv(commandsData, filename);
+
+    // Train the fasttext model
+    hats::Embedding embedding(filename);
+    embedding.train();
+
+    // Check Sentence Embedding - "My name is Arjun!!"
+    std::string sentence = "My name is Arjun!!";
+    fasttext::Vector vec = embedding.getSentenceEmbedding(sentence);
+    std::cout << sentence << std::endl;
+    std::cout << vec << std::endl;
+}
+
+void testWordEmbeddings() {
+    hats::DataTable data = getDataset();
+    
+    // Preprocess the data
+    hats::Preprocessing prerpocessing;
+    data = prerpocessing.pipeline(data);
+
+    // Generate a file with first column of the preprocessed data
+    hats::DataColumn col = std::make_pair("", data[0].second);
+    hats::DataTable commandsData = { col };
+    hats::CSVHandler csvHandler;
+    std::string filename = "preprocessed_data";
+    filename = csvHandler.write_csv(commandsData, filename);
+
+    // Train the fasttext model
+    hats::Embedding embedding(filename);
+    embedding.train();
+    
+    // Check Word embedding - "Hello"
+    fasttext::Vector vec = embedding.getWordEmbedding("Hello");
+    std::cout << "Hello: \n";
+    std::cout << vec << std::endl;
 }
 
 void convertShortTextVectorTest() {
@@ -201,11 +252,12 @@ void writeDefaultDatasetTest() {
     csvHandler.write_csv(data, filename);
 }
 
-void readDefaultDatasetTest(hats::DataTable* data) {
+void readDefaultDatasetTest() {
     std::string filename = hats::files::SOURCE_DATASET_FILENAME;
     hats::CSVHandler csvHandler(filename);
 
     hats::DataTable csvTable = csvHandler.read_csv();
+    std::cout << csvHandler.shape().first;
 
     for (int col = 0; col != csvHandler.shape().second; col++) {
         std::string colName = ((hats::DataColumn)csvTable[col]).first;
@@ -216,8 +268,12 @@ void readDefaultDatasetTest(hats::DataTable* data) {
         }
         std::cout << "\n**********************************************************************\n";
     }
+}
 
-    if (data) {
-        data = &csvTable;
-    }
+hats::DataTable getDataset()
+{
+    std::string filename = hats::files::SOURCE_DATASET_FILENAME;
+    hats::CSVHandler csvHandler(filename);
+
+    return csvHandler.read_csv();
 }
