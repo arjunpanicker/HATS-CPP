@@ -2,10 +2,12 @@
 #include <string>
 
 #include "pre_utils.h"
+#include "ml_utils.h"
 #include "config.h"
 #include "datasethandler.h"
 #include "preprocessing.h"
 #include "embedding.h"
+#include "nnet.h"
 
 hats::DataTable getDataset();
 void menuSelection();
@@ -22,6 +24,7 @@ void convertShortTextVectorTest();
 void convertShortTextStringTest();
 void testWordEmbeddings();
 void testSentenceEmbeddings();
+void testMLNet();
 
 int main(void)
 {  
@@ -47,6 +50,7 @@ void menuSelection() {
     std::cout << "\n****** Word Embedding Tests ******\n";
     std::cout << "11. Test Word Embeddings\n";
     std::cout << "12. Test Sentence Embeddings\n";
+    std::cout << "13. Test Neural Network\n";
     std::cout << "\nSelection: ";
     std::cin >> menuSelection;
 
@@ -86,6 +90,9 @@ void menuSelection() {
         break;
     case 12:
         testSentenceEmbeddings();
+        break;
+    case 13:
+        testMLNet();
         break;
     default:
         std::cout << "Invalid option selected..!!\n\n";
@@ -276,4 +283,24 @@ hats::DataTable getDataset()
     hats::CSVHandler csvHandler(filename);
 
     return csvHandler.read_csv();
+}
+
+void testMLNet() {
+    // e.g. {3, 2, 1}
+    std::vector<unsigned> topology;
+    topology.push_back(3);
+    topology.push_back(2);
+    topology.push_back(1);
+
+    hats::Net myNet(topology);
+
+    // Training of Neural Net
+    std::vector<double> inputVals;
+    myNet.feedForward(inputVals);
+
+    std::vector<double> targetVals;
+    myNet.backProp(targetVals);
+
+    std::vector<double> resultVals;
+    myNet.getResults(resultVals);
 }
