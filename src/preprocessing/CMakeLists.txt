@@ -7,6 +7,7 @@ set(PREPROCESSING_FILES
 set(PREPROCESSING_HEADER_FILES
     include/real.h
     include/datasethandler.h
+    include/pre_utils.h
     include/preprocessing.h
     include/embedding.h
 )
