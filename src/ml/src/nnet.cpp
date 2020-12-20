@@ -92,7 +92,7 @@ namespace hats {
 
     // *********************** class Net ****************************
 
-    Net::Net(const std::vector<unsigned> &topology) {
+    Net::Net(const std::vector<int> &topology) {
         int32_t numLayers = topology.size();
 
         for(int32_t layerNum = 0; layerNum < numLayers; ++layerNum) {

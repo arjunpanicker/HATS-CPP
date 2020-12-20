@@ -2,8 +2,6 @@
 #ifndef ML_UTILS_H
 #define ML_UTILS_H
 
-#include <vector>
-
 namespace hats {
 
     // Neuron-Neuron connection
@@ -12,6 +10,10 @@ namespace hats {
     class Neuron;
 
     typedef std::vector<Neuron> Layer;
+    typedef std::map<std::string, std::vector<int>> MapStoVi;
+
+    template <typename T>
+    MapStoVi oneHotEncode(std::vector<T> &data);
 }
 
 

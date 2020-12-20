@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <unordered_set>
+#include <map>
 
 #include "pre_utils.h"
 #include "ml_utils.h"
@@ -8,6 +10,9 @@
 #include "preprocessing.h"
 #include "embedding.h"
 #include "nnet.h"
+
+// Private methods
+std::vector<std::string> findUnique(hats::DataTable &data);
 
 hats::DataTable getDataset();
 void menuSelection();
@@ -25,6 +30,7 @@ void convertShortTextStringTest();
 void testWordEmbeddings();
 void testSentenceEmbeddings();
 void testMLNet();
+void trainML();
 
 int main(void)
 {  
@@ -51,6 +57,7 @@ void menuSelection() {
     std::cout << "11. Test Word Embeddings\n";
     std::cout << "12. Test Sentence Embeddings\n";
     std::cout << "13. Test Neural Network\n";
+    std::cout << "14. Train ML\n";
     std::cout << "\nSelection: ";
     std::cin >> menuSelection;
 
@@ -93,6 +100,9 @@ void menuSelection() {
         break;
     case 13:
         testMLNet();
+        break;
+    case 14:
+        trainML();
         break;
     default:
         std::cout << "Invalid option selected..!!\n\n";
@@ -287,7 +297,7 @@ hats::DataTable getDataset()
 
 void testMLNet() {
     // e.g. {3, 2, 1}
-    std::vector<unsigned> topology;
+    std::vector<int> topology;
     topology.push_back(3);
     topology.push_back(2);
     topology.push_back(1);
@@ -303,4 +313,83 @@ void testMLNet() {
 
     std::vector<double> resultVals;
     myNet.getResults(resultVals);
+}
+
+void trainML() {
+    hats::DataTable data = getDataset();
+    
+    // Preprocess the data
+    hats::Preprocessing prerpocessing;
+    data = prerpocessing.pipeline(data);
+
+    // Generate a file with first column of the preprocessed data
+    hats::DataColumn col = std::make_pair("", data[0].second);
+    hats::DataTable commandsData = { col };
+    hats::CSVHandler csvHandler;
+    std::string filename = "preprocessed_data";
+    filename = csvHandler.write_csv(commandsData, filename);
+
+    // Create a mapping of class labels to its corresponding 
+    hats::StringList uniqueLabels = findUnique(data);
+    hats::MapStoVi labelMap = hats::oneHotEncode(data);
+
+    // Train the fasttext model
+    const int dims = 50;
+    hats::Embedding embedding(filename, dims);
+    embedding.train();
+    
+    // Create a Table with sentence vectors
+    hats::FasttextDataColumn sentenceVectorColumn = std::make_pair("", 
+            std::vector<hats::FasttextVector> {});
+
+    for (int i = 0; i < data[0].second.size(); i++) {
+        std::string sent = data[0].second.at(i);
+
+        hats::FasttextVector vec = embedding.getSentenceEmbedding(sent);
+        sentenceVectorColumn.second.push_back(vec);
+    }
+    hats::FasttextVectorData vectorizedData = { sentenceVectorColumn };
+
+    // TODO: Remove this testing output snippets
+    std::cout << "\n\n*********************************\n";
+    std::cout << data[0].second[0] << std::endl;
+    std::cout << vectorizedData[0].second[0] << std::endl;
+    std::cout << vectorizedData[0].second[0].size() << std::endl;
+    //
+
+    hats::LabelList vectorizedLabelList;
+    for (int i = 0; i < data[1].second.size(); i++) {
+        std::string label = data[1].second[i];
+        vectorizedLabelList.push_back(labelMap[label]);
+    }
+
+    // Create a data table for the vectorized sentence and labels
+    hats::FasttextDataTable ftDataTable;
+    ftDataTable.ftVectorData = vectorizedData;
+    ftDataTable.labelList = vectorizedLabelList;
+
+    classificationTrain(ftDataTable, dims, uniqueLabels.size());
+}
+
+std::vector<std::string> findUnique(hats::DataTable &data) {
+    std::unordered_set<std::string> uniqueLabelsSet(data[1].second.begin(), data[1].second.end());
+    std::vector<std::string> uniqueLabels(uniqueLabelsSet.begin(), uniqueLabelsSet.end());
+
+    std::cout << "Unique Label count: " << uniqueLabels.size() << std::endl;
+    return uniqueLabels;
+}
+
+void classificationTrain(hats::FasttextDataTable &data, 
+                            const int &inputDims, const int &numLabels) {
+
+    // Initialize some variables
+    int epochs = 10;
+    std::vector<int> topology = {inputDims, numLabels};
+
+    hats::Net myNet(topology);
+
+    // Train the neural network for epochs = epochs
+    for (int i = 0; i < epochs; i++) {
+        // TODO: Complete this code block
+    }
 }

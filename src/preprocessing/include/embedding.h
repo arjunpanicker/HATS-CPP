@@ -11,10 +11,11 @@ namespace hats {
             std::shared_ptr<fasttext::FastText> ftFasttext;
             fasttext::Args ftArgs;
 
-            Embedding(std::string filename) {
+            Embedding(std::string filename, int dims = 50) {
                 ftArgs = fasttext::Args();
                 ftFasttext = std::make_shared<fasttext::FastText>();
                 ftArgs.input = filename;
+                ftArgs.dim = dims;
             }
             
             ~Embedding() { }

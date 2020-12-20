@@ -51,7 +51,7 @@ namespace hats {
             double m_recentAverageSmoothingFactor = 100.0;
 
         public:
-            Net(const std::vector<unsigned> &topology);
+            Net(const std::vector<int> &topology);
             void feedForward(const std::vector<double> &inputVals);
             void backProp(const std::vector<double> &targetVals);
             void getResults(std::vector<double> &resultVals) const;
