@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include "ml_utils.h"
+#include "pre_utils.h"
 #include "nnet.h"
 
 namespace hats {
@@ -111,7 +112,7 @@ namespace hats {
         }
     }
 
-    void Net::feedForward(const std::vector<double> &inputVals) {
+    void Net::feedForward(const hats::FasttextVector &inputVals) {
         if (inputVals.size() != m_layers[0].size() - 1) return;
         std::cout << "Feed forward\n";
 
@@ -130,7 +131,7 @@ namespace hats {
         }
     }
 
-    void Net::backProp(const std::vector<double> &targetVals) {
+    void Net::backProp(const std::vector<int> &targetVals) {
         if (targetVals.size() != m_layers.back().size() - 1) return;
 
         // Calculate overall net error (RMS of output errors)

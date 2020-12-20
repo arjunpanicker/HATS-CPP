@@ -2,6 +2,8 @@
 #ifndef ML_UTILS_H
 #define ML_UTILS_H
 
+#include <map>
+
 namespace hats {
 
     // Neuron-Neuron connection

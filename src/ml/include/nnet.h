@@ -52,8 +52,8 @@ namespace hats {
 
         public:
             Net(const std::vector<int> &topology);
-            void feedForward(const std::vector<double> &inputVals);
-            void backProp(const std::vector<double> &targetVals);
+            void feedForward(const hats::FasttextVector &inputVals);
+            void backProp(const std::vector<int> &targetVals);
             void getResults(std::vector<double> &resultVals) const;
     };
 

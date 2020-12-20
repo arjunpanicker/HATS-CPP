@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include <unordered_set>
-#include <map>
 
 #include "pre_utils.h"
 #include "ml_utils.h"
@@ -29,8 +28,9 @@ void convertShortTextVectorTest();
 void convertShortTextStringTest();
 void testWordEmbeddings();
 void testSentenceEmbeddings();
-void testMLNet();
 void trainML();
+hats::Net classificationTrain(hats::FasttextDataTable &data, 
+                            const int &inputDims, const int &numLabels);
 
 int main(void)
 {  
@@ -56,8 +56,7 @@ void menuSelection() {
     std::cout << "\n****** Word Embedding Tests ******\n";
     std::cout << "11. Test Word Embeddings\n";
     std::cout << "12. Test Sentence Embeddings\n";
-    std::cout << "13. Test Neural Network\n";
-    std::cout << "14. Train ML\n";
+    std::cout << "13. Train ML\n";
     std::cout << "\nSelection: ";
     std::cin >> menuSelection;
 
@@ -99,9 +98,6 @@ void menuSelection() {
         testSentenceEmbeddings();
         break;
     case 13:
-        testMLNet();
-        break;
-    case 14:
         trainML();
         break;
     default:
@@ -295,25 +291,25 @@ hats::DataTable getDataset()
     return csvHandler.read_csv();
 }
 
-void testMLNet() {
-    // e.g. {3, 2, 1}
-    std::vector<int> topology;
-    topology.push_back(3);
-    topology.push_back(2);
-    topology.push_back(1);
+// void testMLNet() {
+//     // e.g. {3, 2, 1}
+//     std::vector<int> topology;
+//     topology.push_back(3);
+//     topology.push_back(2);
+//     topology.push_back(1);
 
-    hats::Net myNet(topology);
+//     hats::Net myNet(topology);
 
-    // Training of Neural Net
-    std::vector<double> inputVals;
-    myNet.feedForward(inputVals);
+//     // Training of Neural Net
+//     std::vector<double> inputVals;
+//     myNet.feedForward(inputVals);
 
-    std::vector<double> targetVals;
-    myNet.backProp(targetVals);
+//     std::vector<double> targetVals;
+//     myNet.backProp(targetVals);
 
-    std::vector<double> resultVals;
-    myNet.getResults(resultVals);
-}
+//     std::vector<double> resultVals;
+//     myNet.getResults(resultVals);
+// }
 
 void trainML() {
     hats::DataTable data = getDataset();
@@ -368,7 +364,7 @@ void trainML() {
     ftDataTable.ftVectorData = vectorizedData;
     ftDataTable.labelList = vectorizedLabelList;
 
-    classificationTrain(ftDataTable, dims, uniqueLabels.size());
+    hats::Net myNet = classificationTrain(ftDataTable, dims, uniqueLabels.size());
 }
 
 std::vector<std::string> findUnique(hats::DataTable &data) {
@@ -379,7 +375,7 @@ std::vector<std::string> findUnique(hats::DataTable &data) {
     return uniqueLabels;
 }
 
-void classificationTrain(hats::FasttextDataTable &data, 
+hats::Net classificationTrain(hats::FasttextDataTable &data, 
                             const int &inputDims, const int &numLabels) {
 
     // Initialize some variables
@@ -390,6 +386,16 @@ void classificationTrain(hats::FasttextDataTable &data,
 
     // Train the neural network for epochs = epochs
     for (int i = 0; i < epochs; i++) {
-        // TODO: Complete this code block
+        hats::FasttextVectorData inputData = data.ftVectorData;
+        hats::LabelList outputData = data.labelList;
+        for (int j = 0; j < inputData[0].second.size(); j++) {
+            hats::FasttextVector inputVals = inputData[0].second[j];
+            myNet.feedForward(inputVals);
+
+            std::vector<int> targetVals = outputData[j];
+            myNet.backProp(targetVals);
+        }
     }
+
+    return myNet;
 }
