@@ -2,8 +2,8 @@
 #include <vector>
 #include <math.h>
 
-#include "ml_utils.h"
 #include "pre_utils.h"
+#include "ml_utils.h"
 #include "nnet.h"
 
 namespace hats {

@@ -2,7 +2,8 @@
 #ifndef ML_UTILS_H
 #define ML_UTILS_H
 
-#include <map>
+#include <vector>
+#include "pre_utils.h"
 
 namespace hats {
 
@@ -12,10 +13,19 @@ namespace hats {
     class Neuron;
 
     typedef std::vector<Neuron> Layer;
-    typedef std::map<std::string, std::vector<int>> MapStoVi;
 
     template <typename T>
-    MapStoVi oneHotEncode(std::vector<T> &data);
+    MapStoVi oneHotEncode(const T &data) {
+        MapStoVi labelMap;
+        for (int i = 0; i < data.size(); i++) {
+            std::vector<int32_t> ohv(data.size(), 0);
+            ohv[i] = 1;
+            
+            labelMap.insert({data[i].first, ohv});
+        }
+
+        return labelMap;
+    }
 }
 
 
