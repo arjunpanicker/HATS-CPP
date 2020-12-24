@@ -6,6 +6,9 @@
 
 namespace hats {
 
+    enum NeuronType { INPUT, HIDDEN, OUTPUT };
+    enum TransferFunctionType { TANH, SOFTMAX };
+
     class Connection {
         private:
             double weight;
@@ -25,18 +28,21 @@ namespace hats {
         private:
             double lr = 0.15;     // [0.0...1.0] overall net training rate
             double alpha = 0.5;  // [0.0...n] multiplier of last weight change (momentum)
-            static double transferFunction(double x);
-            static double transferFunctionDerivative(double x);
+            double transferFunction(double x);
+            double transferFunctionDerivative(double x);
             double m_outputVal;
+            NeuronType neuronType;
             double m_gradient;
             int32_t m_myIndex;
             std::vector<Connection> m_outputWeights;
             double sumDOW(const Layer &nextLayer) const;
 
         public:
-            Neuron(int32_t numOutputs, int32_t myIndex);
+            Neuron(int32_t numOutputs, int32_t myIndex, NeuronType nType);
             void setOutputVal(double val) { m_outputVal = val; }
             double getOutputVal() const { return m_outputVal; }
+            void setNeuronType(NeuronType ntype) { neuronType = ntype; }
+            NeuronType getNeuronType() { return neuronType; }
             void feedForward(const Layer &prevLayer);
             void calcOutputGradients(double targetVal);
             void calcHiddenGradients(const Layer &nextLayer);
@@ -55,6 +61,7 @@ namespace hats {
             void feedForward(const hats::FasttextVector &inputVals);
             void backProp(const std::vector<int> &targetVals);
             void getResults(std::vector<double> &resultVals) const;
+            void getWeights(std::vector<double> &weightVals) const;
     };
 
 }

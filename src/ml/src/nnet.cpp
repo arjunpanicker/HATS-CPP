@@ -16,12 +16,13 @@ namespace hats {
 
     // *********************** class Neuron ****************************
     
-    Neuron::Neuron(int32_t numOutputs, int32_t myIndex) {
+    Neuron::Neuron(int32_t numOutputs, int32_t myIndex, NeuronType nType) {
         for (int32_t c = 0; c < numOutputs; ++c) {
             m_outputWeights.push_back(Connection());
         }
 
         m_myIndex = myIndex;
+        neuronType = nType;
     }
 
     void Neuron::feedForward(const Layer &prevLayer) {
@@ -40,6 +41,11 @@ namespace hats {
 
     double Neuron::transferFunction(double x) {
         // tanh - output range [-1, +1]
+
+        // if (getNeuronType() != OUTPUT) return tanh(x);
+
+        // return exp(x) / ();
+
         return tanh(x);
     }
 
@@ -99,12 +105,20 @@ namespace hats {
         for(int32_t layerNum = 0; layerNum < numLayers; ++layerNum) {
             m_layers.push_back(Layer());
             int32_t numOutputs = layerNum == numLayers - 1 ? 0 : topology[layerNum + 1];
+            
+            NeuronType nType;
+            if (layerNum == 0) {
+                nType = INPUT;
+            } else if (layerNum == numLayers - 1) {
+                nType = OUTPUT;
+            } else {
+                nType = HIDDEN;
+            } 
 
             // We have made a new Layer. Now, we need to add neurons to the layer.
             // We also need to add the bias neuron to each layer
             for (int32_t neuronNum = 0; neuronNum <= topology[layerNum]; ++neuronNum) {
-                m_layers.back().push_back(Neuron(numOutputs, neuronNum));
-                std::cout << "Made Neuron!!\n";
+                m_layers.back().push_back(Neuron(numOutputs, neuronNum, nType));
             }
 
             // Force the bias node's output value to 1.0. It's the last neuron created above
@@ -114,7 +128,6 @@ namespace hats {
 
     void Net::feedForward(const hats::FasttextVector &inputVals) {
         if (inputVals.size() != m_layers[0].size() - 1) return;
-        std::cout << "Feed forward\n";
 
         // Assign the input values to the input neurons
         for (int32_t i = 0; i < inputVals.size(); ++i) {
@@ -186,6 +199,19 @@ namespace hats {
 
         for (int32_t n = 0; n < m_layers.back().size() - 1; ++n) {
             resultVals.push_back(m_layers.back()[n].getOutputVal());
+        }
+    }
+
+    void Net::getWeights(std::vector<double> &weightVals) const {
+        weightVals.clear();
+
+        // Iterate layers
+        for (int32_t l = 0; l < m_layers.size(); ++l) {
+            // Iterate each neuron and get weights;
+            for (int32_t n = 0; n < m_layers[l].size(); ++n) {
+                // TODO: Complete the code to get the connection weights
+            }
+
         }
     }
 

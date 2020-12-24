@@ -28,9 +28,11 @@ void convertShortTextVectorTest();
 void convertShortTextStringTest();
 void testWordEmbeddings();
 void testSentenceEmbeddings();
-void trainML();
+void trainAndTestML();
 hats::Net classificationTrain(hats::FasttextDataTable &data, 
                             const int &inputDims, const int &numLabels);
+
+void predict(std::string &sentence, hats::Net &classifier);
 
 int main(void)
 {  
@@ -98,7 +100,7 @@ void menuSelection() {
         testSentenceEmbeddings();
         break;
     case 13:
-        trainML();
+        trainAndTestML();
         break;
     default:
         std::cout << "Invalid option selected..!!\n\n";
@@ -311,7 +313,7 @@ hats::DataTable getDataset()
 //     myNet.getResults(resultVals);
 // }
 
-void trainML() {
+void trainAndTestML() {
     hats::DataTable data = getDataset();
     
     // Preprocess the data
@@ -327,7 +329,8 @@ void trainML() {
 
     // Create a mapping of class labels to its corresponding 
     hats::StringList uniqueLabels = findUnique(data);
-    hats::MapStoVi labelMap = hats::oneHotEncode(data);
+    hats::MapStoVi labelMap = hats::oneHotEncode(uniqueLabels);
+    hats::MapHandler::saveMap(hats::files::MAP_FILE, labelMap);
 
     // Train the fasttext model
     const int dims = 50;
@@ -346,13 +349,6 @@ void trainML() {
     }
     hats::FasttextVectorData vectorizedData = { sentenceVectorColumn };
 
-    // TODO: Remove this testing output snippets
-    std::cout << "\n\n*********************************\n";
-    std::cout << data[0].second[0] << std::endl;
-    std::cout << vectorizedData[0].second[0] << std::endl;
-    std::cout << vectorizedData[0].second[0].size() << std::endl;
-    //
-
     hats::LabelList vectorizedLabelList;
     for (int i = 0; i < data[1].second.size(); i++) {
         std::string label = data[1].second[i];
@@ -365,6 +361,10 @@ void trainML() {
     ftDataTable.labelList = vectorizedLabelList;
 
     hats::Net myNet = classificationTrain(ftDataTable, dims, uniqueLabels.size());
+    std::cout << "Training complete\n";
+
+    std::string testString = "Turn on the light";
+    predict(testString, myNet);
 }
 
 std::vector<std::string> findUnique(hats::DataTable &data) {
@@ -398,4 +398,26 @@ hats::Net classificationTrain(hats::FasttextDataTable &data,
     }
 
     return myNet;
+}
+
+void predict(std::string &sentence, hats::Net &classifier) {
+    hats::Preprocessing preprocessing;
+    sentence = preprocessing.pipeline(sentence);
+
+    std::string modelFile = "model.h";
+    hats::Embedding embedding(modelFile);
+
+    hats::FasttextVector sentVec = embedding.getSentenceEmbedding(sentence);
+
+    hats::MapStoVi labelMap = hats::MapHandler::loadMap(hats::files::MAP_FILE);
+
+    classifier.feedForward(sentVec);
+
+    std::vector<double> resultVals;
+    classifier.getResults(resultVals);
+
+    for (int i = 0; i < resultVals.size(); ++i) {
+        std::cout << resultVals[i] << " ";
+    }
+    std::cout << "\n";
 }

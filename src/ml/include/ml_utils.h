@@ -21,7 +21,7 @@ namespace hats {
             std::vector<int32_t> ohv(data.size(), 0);
             ohv[i] = 1;
             
-            labelMap.insert({data[i].first, ohv});
+            labelMap.insert({data[i], ohv});
         }
 
         return labelMap;
