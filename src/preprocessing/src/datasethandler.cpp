@@ -171,8 +171,8 @@ namespace hats
 
 		if (mapFile.good()) {
 			std::string line, key;
-			std::vector<int> val;
 			while (std::getline(mapFile, line)) {
+				std::vector<int> val;
 				std::stringstream ss(line);
 				size_t pos{0};
 
