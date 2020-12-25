@@ -1,5 +1,6 @@
 set(ML_FILES
     src/nnet.cpp
+    src/ml_utils.cpp
 )
 
 set(ML_HEADER_FILES

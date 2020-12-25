@@ -2,9 +2,6 @@
 #ifndef ML_UTILS_H
 #define ML_UTILS_H
 
-#include <vector>
-#include "pre_utils.h"
-
 namespace hats {
 
     // Neuron-Neuron connection
@@ -15,10 +12,10 @@ namespace hats {
     typedef std::vector<Neuron> Layer;
 
     template <typename T>
-    MapStoVi oneHotEncode(const T &data) {
+    MapStoVi oneHotEncode(const std::vector<T> &data) {
         MapStoVi labelMap;
         for (int i = 0; i < data.size(); i++) {
-            std::vector<int32_t> ohv(data.size(), 0);
+            DtOneHotVector ohv(data.size(), 0);
             ohv[i] = 1;
             
             labelMap.insert({data[i], ohv});
@@ -26,6 +23,10 @@ namespace hats {
 
         return labelMap;
     }
+
+    DtOneHotVector argmaxOneHot(const std::vector<double> &data);
+
+    std::string oneHotToVal(MapStoVi &ohvMap, const DtOneHotVector &ohv);
 }
 
 

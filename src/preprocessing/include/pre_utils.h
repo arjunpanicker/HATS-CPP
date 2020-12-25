@@ -14,7 +14,9 @@ namespace hats {
 	typedef std::pair<std::string, std::vector<std::string>> DataColumn;
 	typedef std::vector<DataColumn> DataTable;
     typedef std::vector<float> FloatList;
-    typedef std::map<std::string, std::vector<int32_t>> MapStoVi;
+
+    typedef std::vector<int32_t> DtOneHotVector;
+    typedef std::map<std::string, DtOneHotVector> MapStoVi;
 
     typedef fasttext::Vector FasttextVector;
 	typedef std::pair<std::string, std::vector<FasttextVector>> FasttextDataColumn;
