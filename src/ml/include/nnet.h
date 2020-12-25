@@ -28,8 +28,8 @@ namespace hats {
         private:
             double lr = 0.15;     // [0.0...1.0] overall net training rate
             double alpha = 0.5;  // [0.0...n] multiplier of last weight change (momentum)
-            double transferFunction(double x);
-            double transferFunctionDerivative(double x);
+            static double transferFunction(double x);
+            static double transferFunctionDerivative(double x);
             double m_outputVal;
             NeuronType neuronType;
             double m_gradient;
@@ -43,7 +43,7 @@ namespace hats {
             double getOutputVal() const { return m_outputVal; }
             void setNeuronType(NeuronType ntype) { neuronType = ntype; }
             NeuronType getNeuronType() { return neuronType; }
-            void feedForward(const Layer &prevLayer);
+            void feedForward(const Layer &prevLayer, const bool &isOutputLayer);
             void calcOutputGradients(double targetVal);
             void calcHiddenGradients(const Layer &nextLayer);
             void updateInputWeights(Layer &prevLayer);
@@ -55,6 +55,7 @@ namespace hats {
             double m_error;
             double m_recentAverageError;
             double m_recentAverageSmoothingFactor = 100.0;
+            static void ouputLayerSoftmaxFunction(Layer &outputLayer);
 
         public:
             Net(const std::vector<int> &topology);

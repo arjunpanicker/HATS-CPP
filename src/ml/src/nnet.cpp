@@ -25,7 +25,7 @@ namespace hats {
         neuronType = nType;
     }
 
-    void Neuron::feedForward(const Layer &prevLayer) {
+    void Neuron::feedForward(const Layer &prevLayer, const bool &isOutputLayer) {
         double sum = 0.0;
 
         // Sum the prev layer's outputs (which are our inputs)
@@ -35,7 +35,7 @@ namespace hats {
             sum += prevLayer[n].m_outputVal * 
                     prevLayer[n].m_outputWeights[m_myIndex].getWeight();
 
-            m_outputVal = Neuron::transferFunction(sum);
+            m_outputVal = isOutputLayer ? sum : Neuron::transferFunction(sum);
         }
     }
 
@@ -139,8 +139,25 @@ namespace hats {
             Layer &prevLayer = m_layers[layerNum - 1];
 
             for (int32_t n = 0; n < m_layers[layerNum].size() - 1; ++n) {
-                m_layers[layerNum][n].feedForward(prevLayer);
+                m_layers[layerNum][n].feedForward(prevLayer, (layerNum == m_layers.size() - 1));
             }
+        }
+
+        Net::ouputLayerSoftmaxFunction(m_layers.back());
+    }
+
+    void Net::ouputLayerSoftmaxFunction(Layer &outputLayer) {
+        std::vector<double> expValues;
+        double sumExp = 0.0;
+
+        for (int32_t n = 0; n < outputLayer.size() - 1; ++n) {
+            double expVal = exp(outputLayer[n].getOutputVal());
+            sumExp += expVal;
+            expValues.push_back(expVal);
+        }
+
+        for (int32_t n = 0; n < outputLayer.size() - 1; ++n) {
+            outputLayer[n].setOutputVal(expValues[n] / sumExp);
         }
     }
 
