@@ -26,6 +26,7 @@ set(SOURCE_FILES
     src/preprocessing/src/embedding.cpp
 
     src/ml/src/nnet.cpp
+    src/ml/src/ml_utils.cpp
 )
 
 find_package (Threads)
@@ -45,9 +46,11 @@ else()
 
     add_executable(Hats_ML "${PROJECT_SOURCE_DIR}/src/main.cpp")
 
-    target_link_libraries(Hats_ML PUBLIC preprocessing)
-    target_link_libraries(Hats_ML PUBLIC ft)
-    target_link_libraries(Hats_ML PUBLIC ml)
+    target_link_libraries(Hats_ML PUBLIC 
+                            ft
+                            preprocessing
+                            ml
+                        )
 
     message("creating executable")
 endif()
